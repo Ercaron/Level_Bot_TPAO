@@ -9,4 +9,4 @@
 
 ## Historial de revisiones:
 - **10/9:** Creación del script
-- **13/9:** Inicio de creación de UI. Permite ingresar una tecla y que valide el texto ingresado
+- **12/9:** Inicio de creación de UI. Permite ingresar una tecla y que valide el texto ingresado
