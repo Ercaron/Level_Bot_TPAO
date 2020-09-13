@@ -1,7 +1,8 @@
 import threading
 import os
 import tkinter as tk
-#import Chinese as ch
+import Chinese as ch
+from pynput.mouse import Button, Controller
 from tkinter.messagebox import showinfo
 from functools import partial
 
@@ -66,16 +67,28 @@ def validarPosicion(posX, posY):
 
     return True
 
-#def comenzarEjecucionPrograma(txtMeditar,txtPosX, txtPosY):
-    #button = pynput.Button.left
-    #click_thread = ch.ClickMouse(button,txtMeditar,txtPosX,txtPosY)
-    #click_thread.start()
+def comenzarEjecucionPrograma(txtMeditar,txtPosX, txtPosY):
+    button = Button.left
+    click_thread = ch.ClickMouse(button,txtMeditar,txtPosX,txtPosY)
+    ch.start(click_thread)
+    window.destroy()
+
+def esValidoArchivo():
+    archivoConfiguracion = abrirArchivo()
+    filaTeclaMeditar = archivoConfiguracion.readline()
+    filaPosX = archivoConfiguracion.readline()
+    filaPosY = archivoConfiguracion.readline()
+    teclaMeditar = filaTeclaMeditar.split("=")[1]
+    posX = filaPosX.split("=")[1]
+    posY = filaPosY.split("=")[1]
+    comenzarEjecucionPrograma(teclaMeditar.strip(),posX,posY)
+    return True
             
 def validarInput(txtMeditar, txtPosX, txtPosY):
     if(validarTeclaMeditar(txtMeditar)) :
         if(validarPosicion(txtPosX, txtPosY)):
             escribirArchivo(txtMeditar,txtPosX,txtPosY)
-            #comenzarEjecucionPrograma(txtMeditar, txtPosX, txtPosY)
+            comenzarEjecucionPrograma(txtMeditar, txtPosX, txtPosY)
 
 class UiBot(threading.Thread):
 
@@ -86,48 +99,51 @@ class UiBot(threading.Thread):
         self.txtPosicionX = txtPosicionX
         self.txtPosicionY = txtPosicionY
 
-    window.title("Herramienta de Lanzamiento Automático de Hechizos para TPAO")
-    window.geometry("1024x720")
+    if(esValidoArchivo()):
+        print("Es valido")
+    else :
+        window.title("Herramienta de Lanzamiento qAutomático de Hechizos para TPAO")
+        window.geometry("1024x720")
 
-    PORCENTAJEANCHO = 35
-    PORCENTAJEALTO = 25
+        PORCENTAJEANCHO = 35
+        PORCENTAJEALTO = 25
 
-    anchoPantalla = window.winfo_screenwidth()
-    altoPantalla = window.winfo_screenheight()
+        anchoPantalla = window.winfo_screenwidth()
+        altoPantalla = window.winfo_screenheight()
 
-    anchoWidget = (PORCENTAJEANCHO * anchoPantalla) / 100
-    altoWidghet = (PORCENTAJEALTO * altoPantalla) / 100
+        anchoWidget = (PORCENTAJEANCHO * anchoPantalla) / 100
+        altoWidghet = (PORCENTAJEALTO * altoPantalla) / 100
 
-    resolucionWidget = str(int(anchoWidget)) + "x" + str(int(altoWidghet))
-    window.geometry(resolucionWidget)
+        resolucionWidget = str(int(anchoWidget)) + "x" + str(int(altoWidghet))
+        window.geometry(resolucionWidget)
 
-    # Primera fila: Titulo de la aplicación
-    labelTitulo = tk.Label(window, text="Bienvenido, Sr trolo", anchor='center', font=("Arial Bold", 25))
-    labelTitulo.grid(column=0, columnspan=3, row=0)
+        # Primera fila: Titulo de la aplicación
+        labelTitulo = tk.Label(window, text="Bienvenido, Sr trolo", anchor='center', font=("Arial Bold", 25))
+        labelTitulo.grid(column=0, columnspan=3, row=0)
 
-    # Segunda Fila = Tecla de meditar
-    labelMeditar = tk.Label(window, text="Tecla de Meditar", font=("Arial Bold", 18))
-    labelMeditar.grid(column=0, row=1)
-    txtFieldTeclaMeditar = tk.Entry(window,width=20, textvariable=txtTeclaMeditar)
-    txtFieldTeclaMeditar.grid(column=1, row = 1, pady=20, padx = 10)
+        # Segunda Fila = Tecla de meditar
+        labelMeditar = tk.Label(window, text="Tecla de Meditar", font=("Arial Bold", 18))
+        labelMeditar.grid(column=0, row=1)
+        txtFieldTeclaMeditar = tk.Entry(window,width=20, textvariable=txtTeclaMeditar)
+        txtFieldTeclaMeditar.grid(column=1, row = 1, pady=20, padx = 10)
 
-    # Tercera fila = Posición X e Y
-    labelPosicionX = tk.Label(window, text="Posición Horizontal", font=("Arial Bold", 18))
-    labelPosicionX.grid(column=0 , row=2)
-    txtFieldPosicionX = tk.Entry(window, width = 20, textvariable=txtPosicionX)
-    txtFieldPosicionX.grid(column=1, row = 2, pady = 20)
+        # Tercera fila = Posición X e Y
+        labelPosicionX = tk.Label(window, text="Posición Horizontal", font=("Arial Bold", 18))
+        labelPosicionX.grid(column=0 , row=2)
+        txtFieldPosicionX = tk.Entry(window, width = 20, textvariable=txtPosicionX)
+        txtFieldPosicionX.grid(column=1, row = 2, pady = 20)
 
-    labelPosicionY = tk.Label(window, text="Posicion Vertical", font=("Arial Bold",18))
-    labelPosicionY.grid(column=2, row=2)
-    txtFieldPosicionY = tk.Entry(window, width=20, textvariable=txtPosicionY)
-    txtFieldPosicionY.grid(column=3, row=2, pady=20)
+        labelPosicionY = tk.Label(window, text="Posicion Vertical", font=("Arial Bold",18))
+        labelPosicionY.grid(column=2, row=2)
+        txtFieldPosicionY = tk.Entry(window, width=20, textvariable=txtPosicionY)
+        txtFieldPosicionY.grid(column=3, row=2, pady=20)
 
-    # Cuarta fila = Boton aceptar
+        # Cuarta fila = Boton aceptar
 
-    botonAceptar = tk.Button(window, width = 20, text="Aceptar", command=lambda: validarInput(txtTeclaMeditar.get(), txtPosicionX.get(), txtPosicionY.get()))
-    botonAceptar.grid(column=1, columnspan=2, row=3)
+        botonAceptar = tk.Button(window, width = 20, text="Aceptar", command=lambda: validarInput(txtTeclaMeditar.get(), txtPosicionX.get(), txtPosicionY.get()))
+        botonAceptar.grid(column=1, columnspan=2, row=3)
 
-    window.mainloop()
+        window.mainloop()
 
 
 
