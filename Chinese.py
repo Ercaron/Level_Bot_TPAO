@@ -6,8 +6,9 @@ from pynput import keyboard
 
 button = Button.left
 key_meditate = keyboard.KeyCode(char='q')
-lanzar_btn_pos = (1057, 485)
+lanzar_btn_pos = (1427, 650)
 current = set()
+
 
 INTERACT_KEYS = [
     { keyboard.KeyCode(char='x'), keyboard.KeyCode(char='c')}
@@ -22,12 +23,15 @@ CLOSE_KEYS = [
 
 class ClickMouse(threading.Thread):
     start_pos = (0,0)
-    def __init__(self, button):
+
+    def __init__(self, button, teclaMeditar, posX, posY):
         super(ClickMouse, self).__init__()
-        print("Init ClickMouse")
+        print("Inicia el Programa de AutoLanzado")
         self.button = button
         self.clicking = False
         self.running= True
+        self.lanzar_btn_pos = (posX,posY)
+        self.teclaMeditar = keyboard.KeyCode(char=teclaMeditar)
 
     def change_clicking_state(self):
         self.clicking = not self.clicking
@@ -55,7 +59,7 @@ class ClickMouse(threading.Thread):
                 
 
 mouse = Controller()
-click_thread = ClickMouse(button)
+click_thread = ClickMouse(button,"q",25,25)
 click_thread.start()
 
 
