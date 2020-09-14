@@ -24,7 +24,7 @@ class ClickMouse(threading.Thread):
 
     def __init__(self, button, botonMeditar, posX, posY):
         super(ClickMouse, self).__init__()
-        print("Inicia el Programa de AutoLanzado")
+        print("Inicia la ejecución del Programa de AutoLanzado")
         self.button = button
         self.clicking = False
         self.running= True
@@ -33,6 +33,10 @@ class ClickMouse(threading.Thread):
 
     def change_clicking_state(self):
         self.clicking = not self.clicking
+        if(self.clicking):
+            print("Bot Activado")
+        else:
+            print("Bot Desactivado")
 
     def stop_clicking(self):
         self.clicking = False
@@ -69,7 +73,6 @@ def start(click_thread):
             if any(all(k in current for k in COMBO) for COMBO in INTERACT_KEYS):
                 click_thread.start_pos = mouse.position
                 click_thread.change_clicking_state()
-                print("Change State")
 
 
         #Same as above but for closing the bot
@@ -78,7 +81,7 @@ def start(click_thread):
             if any(all(k in current for k in COMBO) for COMBO in CLOSE_KEYS):
                 click_thread.exit()
                 listener.stop()
-                print("Close App")
+                print("Bot Finalizado")
     
         
 
@@ -91,5 +94,5 @@ def start(click_thread):
                 current.remove(key)
 
     with keyboard.Listener(on_press=on_press,on_release=on_release) as listener:
-        print("Input Available")
+        print("Aplicación Lista para Ejecutar")
         listener.join()

@@ -1,8 +1,7 @@
-import ui as bot
+import initScreen as init
 
 def main():
-    thread = bot.UiBot()
-    thread.start()
+    init.InitScreen()
 
 if __name__ == '__main__':
     main()

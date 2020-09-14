@@ -6,144 +6,140 @@ from pynput.mouse import Button, Controller
 from tkinter.messagebox import showinfo
 from functools import partial
 
-
-
 NOMBREARCHIVO = "configuracion.txt"
-window = tk.Tk()
-txtTeclaMeditar = tk.StringVar(window)
-txtPosicionX = tk.StringVar(window)
-txtPosicionY = tk.StringVar(window)
+PORCENTAJEANCHO = 35
+PORCENTAJEALTO = 25
 
-def abrirArchivo():
-    if(os.path.isfile(NOMBREARCHIVO)):
-        file = open(NOMBREARCHIVO,"r")
-        return file
-    else :
+class UiBot(tk.Frame):
+
+    def __init__(self, master):
+        self.master = master
+        self.window = tk.Toplevel()
+        self.txtTeclaMeditar = tk.StringVar(self.window)
+        self.txtPosicionX = tk.StringVar(self.window)
+        self.txtPosicionY = tk.StringVar(self.window)
+
+
+    def abrirArchivo(self):
+        if(os.path.isfile(NOMBREARCHIVO)):
+            file = open(NOMBREARCHIVO,"r")
+            return file
+        else :
+            file = open(NOMBREARCHIVO,"w")
+            file.write("TECLA_MEDITAR= \n")
+            file.write("POSICION_LANZAR_X= \n")
+            file.write("POSICION_LANZAR_Y= \n")
+            return file
+
+    def escribirArchivo(self,teclaMeditar, posX, posY):
+        nuevaTeclaMeditar="TECLA_MEDITAR=" + teclaMeditar + "\n"
+        nuevaPosX="POSICION_LANZAR_X=" + posX + "\n"
+        nuevaPosY="POSICION_LANZAR_Y=" + posY + "\n"
         file = open(NOMBREARCHIVO,"w")
-        file.write("TECLA_MEDITAR= \n")
-        file.write("POSICION_LANZAR_X= \n")
-        file.write("POSICION_LANZAR_Y= \n")
-        return file
+        file.write(nuevaTeclaMeditar.strip())
+        file.write(nuevaPosX.strip())
+        file.write(nuevaPosY.strip())
+        file.close()
+        showinfo("Éxito", "Información guardada satisfactoriamente")
 
-def escribirArchivo(teclaMeditar, posX, posY):
-    nuevaTeclaMeditar="TECLA_MEDITAR=" + teclaMeditar + "\n"
-    nuevaPosX="POSICION_LANZAR_X=" + posX + "\n"
-    nuevaPosY="POSICION_LANZAR_Y=" + posY + "\n"
-    file = open(NOMBREARCHIVO,"w")
-    file.write(nuevaTeclaMeditar)
-    file.write(nuevaPosX)
-    file.write(nuevaPosY)
-    file.close()
-    showinfo("Éxito", "Información guardada satisfactoriamente")
+    def validarTeclaMeditar(self,txtMeditar):
+        if(len(txtMeditar) == 0):
+            showinfo("Error", "Debe ingresar un caracter para la Tecla de Meditación")
+            return False
+        elif len(txtMeditar) != 1 :
+            showinfo("Error", "La tecla de meditación debe ser un único caracter")
+            return False
+        else :
+            return True
 
-def validarTeclaMeditar(txtMeditar):
-    if(len(txtMeditar) == 0):
-        showinfo("Error", "Debe ingresar un caracter para la Tecla de Meditación")
-        return False
-    elif len(txtMeditar) != 1 :
-        showinfo("Error", "La tecla de meditación debe ser un único caracter")
-        return False
-    else :
+    def comenzarEjecucionPrograma(self,txtMeditar,txtPosX, txtPosY):
+        button = Button.left
+        self.master.destroy()
+        click_thread = ch.ClickMouse(button,txtMeditar,txtPosX,txtPosY)
+        ch.start(click_thread)
+
+    def validarInput(self):
+        txtMeditar = self.txtTeclaMeditar.get()
+        txtPosX = self.txtPosicionX.get()
+        txtPosY = self.txtPosicionY.get()
+        if(self.validarTeclaMeditar(txtMeditar)) :
+            if(self.validarPosicion(txtPosX, txtPosY)):
+                self.escribirArchivo(txtMeditar,txtPosX,txtPosY)
+                self.comenzarEjecucionPrograma(txtMeditar, txtPosX, txtPosY)
+
+    def obtenerValue(self,line):
+        return (line.split("=")[1]).strip()
+
+    def validarPosicion(self,posX, posY):
+        try:
+            int(posX)
+            int(posY)
+        except ValueError:
+            showinfo("Error", "Las posiciones deben ser numéricas")
+            return False
+
+        posicionX = int(posX)
+        posicionY = int(posY)
+        if(posicionX < 0 or posicionX > 1920):
+            showinfo("Error", "La posición en X debe ser un número entre 0 y 1920")
+            return False
+        
+        if(posicionY < 0 or posicionY > 1080):
+            showinfo("Error", "La posición en Y debe ser un número entre 0 y 1080")
+            return False
+
         return True
 
-def validarPosicion(posX, posY):
+    def centrarPantalla(self):
+        w = self.window.winfo_reqwidth()
+        h = self.window.winfo_reqheight()
+        ws = self.window.winfo_screenwidth()
+        hs = self.window.winfo_screenheight()
+        x = (ws/2) - (w/2)
+        y = (hs/2) - (h/2)
+        self.window.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
-    try:
-        int(posX)
-        int(posY)
-    except ValueError:
-        showinfo("Error", "Las posiciones deben ser numéricas")
-        return False
+    def start(self):
+        self.window.title("Configuración de atajos")
 
-    posicionX = int(posX)
-    posicionY = int(posY)
-    if(posicionX < 0 or posicionX > 1920):
-        showinfo("Error", "La posición en X debe ser un número entre 0 y 1920")
-        return False
-    
-    if(posicionY < 0 or posicionY > 1080):
-        showinfo("Error", "La posición en Y debe ser un número entre 0 y 1080")
-        return False
+        self.centrarPantalla()
 
-    return True
-
-def comenzarEjecucionPrograma(txtMeditar,txtPosX, txtPosY):
-    button = Button.left
-    click_thread = ch.ClickMouse(button,txtMeditar,txtPosX,txtPosY)
-    ch.start(click_thread)
-    window.destroy()
-
-def esValidoArchivo():
-    archivoConfiguracion = abrirArchivo()
-    filaTeclaMeditar = archivoConfiguracion.readline()
-    filaPosX = archivoConfiguracion.readline()
-    filaPosY = archivoConfiguracion.readline()
-    teclaMeditar = filaTeclaMeditar.split("=")[1]
-    posX = filaPosX.split("=")[1]
-    posY = filaPosY.split("=")[1]
-    comenzarEjecucionPrograma(teclaMeditar.strip(),posX,posY)
-    return True
-            
-def validarInput(txtMeditar, txtPosX, txtPosY):
-    if(validarTeclaMeditar(txtMeditar)) :
-        if(validarPosicion(txtPosX, txtPosY)):
-            escribirArchivo(txtMeditar,txtPosX,txtPosY)
-            comenzarEjecucionPrograma(txtMeditar, txtPosX, txtPosY)
-
-class UiBot(threading.Thread):
-
-    def __init__(self):
-        super(UiBot, self).__init__()
-        self.window = window
-        self.txtTeclaMeditar = txtTeclaMeditar
-        self.txtPosicionX = txtPosicionX
-        self.txtPosicionY = txtPosicionY
-
-    if(esValidoArchivo()):
-        print("Es valido")
-    else :
-        window.title("Herramienta de Lanzamiento qAutomático de Hechizos para TPAO")
-        window.geometry("1024x720")
-
-        PORCENTAJEANCHO = 35
-        PORCENTAJEALTO = 25
-
-        anchoPantalla = window.winfo_screenwidth()
-        altoPantalla = window.winfo_screenheight()
+        anchoPantalla = self.window.winfo_screenwidth()
+        altoPantalla = self.window.winfo_screenheight()
 
         anchoWidget = (PORCENTAJEANCHO * anchoPantalla) / 100
         altoWidghet = (PORCENTAJEALTO * altoPantalla) / 100
 
         resolucionWidget = str(int(anchoWidget)) + "x" + str(int(altoWidghet))
-        window.geometry(resolucionWidget)
+        self.window.geometry(resolucionWidget)
 
         # Primera fila: Titulo de la aplicación
-        labelTitulo = tk.Label(window, text="Bienvenido, Sr trolo", anchor='center', font=("Arial Bold", 25))
-        labelTitulo.grid(column=0, columnspan=3, row=0)
+        labelTitulo = tk.Label(self.window, text="Bienvenido, Sr trolo", anchor='center', font=("Arial Bold", 25))
+        labelTitulo.place(relx = 0.5, rely = 0.1, anchor = "center")
 
         # Segunda Fila = Tecla de meditar
-        labelMeditar = tk.Label(window, text="Tecla de Meditar", font=("Arial Bold", 18))
-        labelMeditar.grid(column=0, row=1)
-        txtFieldTeclaMeditar = tk.Entry(window,width=20, textvariable=txtTeclaMeditar)
-        txtFieldTeclaMeditar.grid(column=1, row = 1, pady=20, padx = 10)
+        labelMeditar = tk.Label(self.window, text="Tecla de Meditar", font=("Arial Bold", 18))
+        labelMeditar.place(relx = 0.2, rely = 0.3, anchor = "center")
+        txtFieldTeclaMeditar = tk.Entry(self.window,width=20, textvariable=self.txtTeclaMeditar)
+        txtFieldTeclaMeditar.place(relx = 0.6, rely = 0.3, anchor = "center")
 
         # Tercera fila = Posición X e Y
-        labelPosicionX = tk.Label(window, text="Posición Horizontal", font=("Arial Bold", 18))
-        labelPosicionX.grid(column=0 , row=2)
-        txtFieldPosicionX = tk.Entry(window, width = 20, textvariable=txtPosicionX)
-        txtFieldPosicionX.grid(column=1, row = 2, pady = 20)
+        labelPosicionX = tk.Label(self.window, text="Posición Horizontal", font=("Arial Bold", 18))
+        labelPosicionX.place(relx = 0.2, rely = 0.5, anchor = "center")
+        txtFieldPosicionX = tk.Entry(self.window, width = 20, textvariable=self.txtPosicionX)
+        txtFieldPosicionX.place(relx = 0.6, rely = 0.5, anchor = "center")
 
-        labelPosicionY = tk.Label(window, text="Posicion Vertical", font=("Arial Bold",18))
-        labelPosicionY.grid(column=2, row=2)
-        txtFieldPosicionY = tk.Entry(window, width=20, textvariable=txtPosicionY)
-        txtFieldPosicionY.grid(column=3, row=2, pady=20)
+        labelPosicionY = tk.Label(self.window, text="Posición Vertical", font=("Arial Bold",18))
+        labelPosicionY.place(relx = 0.2, rely = 0.7, anchor = "center")
+        txtFieldPosicionY = tk.Entry(self.window, width=20, textvariable=self.txtPosicionY)
+        txtFieldPosicionY.place(relx = 0.6, rely = 0.7, anchor = "center")
 
         # Cuarta fila = Boton aceptar
 
-        botonAceptar = tk.Button(window, width = 20, text="Aceptar", command=lambda: validarInput(txtTeclaMeditar.get(), txtPosicionX.get(), txtPosicionY.get()))
-        botonAceptar.grid(column=1, columnspan=2, row=3)
+        botonAceptar = tk.Button(self.window, width = 20, text="Aceptar", command= self.validarInput)
+        botonAceptar.place(relx = 0.5, rely = 0.9, anchor = "center")
 
-        window.mainloop()
+        self.window.mainloop()
 
 
 

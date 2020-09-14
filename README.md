@@ -14,3 +14,6 @@
     - Punto de entrada a la app es la UI
     - Si hay un archivo de configuración válido => Se inicia el bot automaticamente (Falta armar el otro camino)
     - Se puede leer y crear un archivo de configuración en la carpeta del bot para levantar la info de la tecla de meditar, posicion en x e y del botón lanzar
+- **14/9:** Novedades
+    - Ventana inicial para seleccionar si se quiere iniciar la aplicación o configurarla. En el caso de que no existe configuración, es obligatoria hacerla previo a ejecutar.
+    - BugFix a la hora de guardar los valores ingresados por teclado ya que guardaba un espacio en blanco extra.
