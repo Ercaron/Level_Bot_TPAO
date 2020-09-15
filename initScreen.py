@@ -8,6 +8,7 @@ from pynput.mouse import Button, Controller
 
 
 NOMBREARCHIVO = "configuracion.txt"
+VERSION = "Versión Alpha 0.1"
 
 class InitScreen(tk.Frame):
     def __init__(self):
@@ -98,6 +99,9 @@ class InitScreen(tk.Frame):
 
         botonIniciar = tk.Button(self.window, width = 20, text="Iniciar", command=self.abrirArchivo)
         botonIniciar.place(relx= 0.5, rely = 0.7, anchor="center")
+
+        labelAlpha = tk.Label(self.window, text=VERSION, anchor='center', font=("Arial bold",10))
+        labelAlpha.place(relx = 0.7, rely = 0.9, anchor = "center")
 
         self.window.mainloop()
 

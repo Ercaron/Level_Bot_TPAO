@@ -2,6 +2,7 @@ import time
 import threading
 from pynput.mouse import Button, Controller
 from pynput import keyboard
+from tkinter.messagebox import showinfo
 
 
 button = Button.left
@@ -52,7 +53,7 @@ class ClickMouse(threading.Thread):
     
     def run(self):
         while self.running:
-            while self.clicking:
+            while self.clicking:     
                 mouse.position = self.lanzar_btn_pos
                 mouse.click(self.button)
                 mouse.position = self.start_pos
@@ -89,6 +90,7 @@ def start(click_thread):
                 click_thread.exit()
                 listener.stop()
                 print("Bot Finalizado")
+                showinfo("Finalizado","Gracias, vuelva pronto")
     
         
 
