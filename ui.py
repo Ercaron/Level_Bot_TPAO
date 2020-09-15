@@ -19,26 +19,14 @@ class UiBot(tk.Frame):
         self.txtPosicionX = tk.StringVar(self.window)
         self.txtPosicionY = tk.StringVar(self.window)
 
-
-    def abrirArchivo(self):
-        if(os.path.isfile(NOMBREARCHIVO)):
-            file = open(NOMBREARCHIVO,"r")
-            return file
-        else :
-            file = open(NOMBREARCHIVO,"w")
-            file.write("TECLA_MEDITAR= \n")
-            file.write("POSICION_LANZAR_X= \n")
-            file.write("POSICION_LANZAR_Y= \n")
-            return file
-
     def escribirArchivo(self,teclaMeditar, posX, posY):
-        nuevaTeclaMeditar="TECLA_MEDITAR=" + teclaMeditar + "\n"
-        nuevaPosX="POSICION_LANZAR_X=" + posX + "\n"
-        nuevaPosY="POSICION_LANZAR_Y=" + posY + "\n"
-        file = open(NOMBREARCHIVO,"w")
-        file.write(nuevaTeclaMeditar.strip())
-        file.write(nuevaPosX.strip())
-        file.write(nuevaPosY.strip())
+        nuevaTeclaMeditar="TECLA_MEDITAR=" + teclaMeditar + '\n'
+        nuevaPosX="POSICION_LANZAR_X=" + posX + '\n'
+        nuevaPosY="POSICION_LANZAR_Y=" + posY + '\n'
+        file = open(NOMBREARCHIVO,"w",encoding="ascii", newline="\r\n")
+        file.write(nuevaTeclaMeditar)
+        file.write(nuevaPosX)
+        file.write(nuevaPosY)
         file.close()
         showinfo("Éxito", "Información guardada satisfactoriamente")
 

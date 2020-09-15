@@ -25,6 +25,7 @@ class ClickMouse(threading.Thread):
     def __init__(self, button, botonMeditar, posX, posY):
         super(ClickMouse, self).__init__()
         print("Inicia la ejecución del Programa de AutoLanzado")
+        self.isMeditando = False
         self.button = button
         self.clicking = False
         self.running= True
@@ -37,6 +38,10 @@ class ClickMouse(threading.Thread):
             print("Bot Activado")
         else:
             print("Bot Desactivado")
+            if(self.isMeditando):
+                keyboard.Controller().press(self.teclaMeditar)
+                keyboard.Controller().release(self.teclaMeditar)
+                self.isMeditando = False
 
     def stop_clicking(self):
         self.clicking = False
@@ -53,9 +58,11 @@ class ClickMouse(threading.Thread):
                 mouse.position = self.start_pos
                 time.sleep(0.05)
                 mouse.click(self.button)
+                self.isMeditando = True
                 keyboard.Controller().press(self.teclaMeditar)
                 time.sleep(0.025)
                 keyboard.Controller().release(self.teclaMeditar)
+                self.isMeditando = False
                 time.sleep(0.05)
 
 mouse = Controller()
