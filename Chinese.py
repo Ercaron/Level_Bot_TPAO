@@ -61,10 +61,10 @@ class ClickMouse(threading.Thread):
                 mouse.click(self.button)
                 self.isMeditando = True
                 keyboard.Controller().press(self.teclaMeditar)
-                time.sleep(0.025)
+                time.sleep(0.07)
                 keyboard.Controller().release(self.teclaMeditar)
                 self.isMeditando = False
-                time.sleep(0.05)
+                time.sleep(0.1)
 
 mouse = Controller()
            

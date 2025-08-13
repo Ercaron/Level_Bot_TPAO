@@ -11,6 +11,7 @@
  - **1600x900**: X=1300 Y=570
  - **1366x768:** X=1192 Y=507
  - **1280x720:** X=1143 Y=481
+ - **fullScreen** X=1138 Y=4750
 
 ## Información de Uso:
  - Si es la primera vez que se abre el programa, tocar el botón configurar.
