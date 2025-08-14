@@ -38,6 +38,7 @@ CONFIG_WINDOW_HEIGHT_PERCENT = 25
 class BotConfig:
     """Configuration data class for bot settings"""
     meditation_key: str
+    golpe_key: str
     click_position: Tuple[int, int]
     
     @classmethod
@@ -55,6 +56,7 @@ class BotConfig:
         
         return cls(
             meditation_key=config_data.get('TECLA_MEDITAR', ''),
+            golpe_key=config_data.get('TECLA_GOLPE', ''),
             click_position=(
                 int(config_data.get('POSICION_LANZAR_X', 0)),
                 int(config_data.get('POSICION_LANZAR_Y', 0))
@@ -65,5 +67,6 @@ class BotConfig:
         """Save configuration to file"""
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(f"TECLA_MEDITAR={self.meditation_key}\n")
+            f.write(f"TECLA_GOLPE={self.golpe_key}\n")
             f.write(f"POSICION_LANZAR_X={self.click_position[0]}\n")
             f.write(f"POSICION_LANZAR_Y={self.click_position[1]}\n")

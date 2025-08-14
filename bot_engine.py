@@ -16,9 +16,10 @@ class BotEngine(threading.Thread):
     Main bot engine that handles automated spell casting
     """
     
-    def __init__(self, meditation_key: str, click_position: Tuple[int, int]):
+    def __init__(self, meditation_key: str, golpe_key: str, click_position: Tuple[int, int]):
         super().__init__()
         self.meditation_key = keyboard.KeyCode(char=meditation_key)
+        self.golpe_key = keyboard.KeyCode(char=golpe_key)
         self.click_position = click_position
         self.mouse = Controller()
         self.start_position = (0, 0)
@@ -56,7 +57,7 @@ class BotEngine(threading.Thread):
         self._stop_meditation()
         print("Bot stopped")
     
-    def _perform_spell_cast(self) -> None:
+    def _perform_actions(self) -> None:
         """Perform one complete spell casting cycle"""
         # Move to click position and click
         self.mouse.position = self.click_position
@@ -68,11 +69,22 @@ class BotEngine(threading.Thread):
         self.mouse.click(Button.left)
         
         # Start meditation
+        
+        keyboard.Controller().press(self.meditation_key)
+        time.sleep(MEDITATION_DELAY)
+        keyboard.Controller().release(self.meditation_key)
         self.is_meditating = True
+
+        # Stop meditation
         keyboard.Controller().press(self.meditation_key)
         time.sleep(MEDITATION_DELAY)
         keyboard.Controller().release(self.meditation_key)
         self.is_meditating = False
+
+        #Start golpe
+        keyboard.Controller().press(self.golpe_key)
+        time.sleep(0.02)
+        keyboard.Controller().release(self.golpe_key)
         
         # Wait before next cycle
         time.sleep(CYCLE_DELAY)
@@ -84,7 +96,7 @@ class BotEngine(threading.Thread):
         while self.is_running:
             if self.is_active:
                 try:
-                    self._perform_spell_cast()
+                    self._perform_actions()
                 except Exception as e:
                     print(f"Error in bot loop: {e}")
                     self.is_active = False
@@ -121,15 +133,16 @@ class BotEngine(threading.Thread):
                 self.current_keys.remove(key)
 
 
-def start_bot(meditation_key: str, click_position: Tuple[int, int]) -> None:
+def start_bot(meditation_key: str, golpe_key: str, click_position: Tuple[int, int]) -> None:
     """
     Start the bot with the given configuration
     
     Args:
         meditation_key: Key to press for meditation
+        golpe_key: Key to press for golpe
         click_position: (x, y) coordinates to click
     """
-    bot = BotEngine(meditation_key, click_position)
+    bot = BotEngine(meditation_key, golpe_key, click_position)
     bot.start()
     
     # Set up keyboard listener
@@ -137,7 +150,7 @@ def start_bot(meditation_key: str, click_position: Tuple[int, int]) -> None:
         on_press=bot.on_key_press,
         on_release=bot.on_key_release
     ) as listener:
-        print("Bot ready - Press X+C to start/stop, X+B to exit")
+        print("Bot ready - Press X+C to start/stop, X+B to exit") #TODO change for dynamic keys
         listener.join()
     
     messagebox.showinfo("Finalizado", "Gracias, vuelva pronto")

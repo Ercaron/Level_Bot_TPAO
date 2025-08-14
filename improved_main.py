@@ -58,7 +58,7 @@ class MainWindow:
             self.root,
             text="Iniciar",
             width=20,
-            command=self.start_bot
+            command=self.start_bot_action
         )
         start_button.place(relx=0.5, rely=0.7, anchor="center")
         
@@ -77,12 +77,12 @@ class MainWindow:
         config_window = ConfigWindow(self.root)
         config_window.show()
     
-    def start_bot(self):
+    def start_bot_action(self):
         """Start the bot with saved configuration"""
         try:
             config = BotConfig.from_file(CONFIG_FILE)
             self.root.destroy()
-            start_bot(config.meditation_key, config.click_position)
+            start_bot(config.meditation_key, config.golpe_key, config.click_position)
         except FileNotFoundError:
             messagebox.showerror(
                 "Error", 
@@ -124,6 +124,10 @@ class ConfigWindow:
     
     def create_widgets(self):
         """Create configuration form widgets"""
+
+        configuration_labels_x = 0.3
+        configuration_labels_y = 0.3
+
         # Title
         title_label = tk.Label(
             self.window,
@@ -138,7 +142,7 @@ class ConfigWindow:
             self.window,
             text="Tecla de Meditar:",
             font=("Arial Bold", 12)
-        ).place(relx=0.2, rely=0.3, anchor="center")
+        ).place(relx=configuration_labels_x, rely=configuration_labels_y, anchor="center")
         
         self.meditation_key_var = tk.StringVar()
         meditation_entry = tk.Entry(
@@ -146,14 +150,31 @@ class ConfigWindow:
             textvariable=self.meditation_key_var,
             width=15
         )
-        meditation_entry.place(relx=0.7, rely=0.3, anchor="center")
+        meditation_entry.place(relx=0.6, rely=configuration_labels_y, anchor="center")
+        configuration_labels_y += 0.1
+
+        # Golpe key
+        tk.Label(
+            self.window,
+            text="Tecla de Golpe:",
+            font=("Arial Bold", 12)
+        ).place(relx=configuration_labels_x, rely=configuration_labels_y, anchor="center")
+        
+        self.golpe_key_var = tk.StringVar()
+        golpe_entry = tk.Entry(
+            self.window,
+            textvariable=self.golpe_key_var,
+            width=15
+        )
+        golpe_entry.place(relx=0.6, rely=configuration_labels_y, anchor="center")
+        configuration_labels_y += 0.1
         
         # X Position
         tk.Label(
             self.window,
             text="Posición X:",
             font=("Arial Bold", 12)
-        ).place(relx=0.2, rely=0.5, anchor="center")
+        ).place(relx=configuration_labels_x, rely=configuration_labels_y, anchor="center")
         
         self.pos_x_var = tk.StringVar()
         pos_x_entry = tk.Entry(
@@ -161,14 +182,15 @@ class ConfigWindow:
             textvariable=self.pos_x_var,
             width=15
         )
-        pos_x_entry.place(relx=0.7, rely=0.5, anchor="center")
+        pos_x_entry.place(relx=0.6, rely=configuration_labels_y, anchor="center")
+        configuration_labels_y += 0.1
         
         # Y Position
         tk.Label(
             self.window,
             text="Posición Y:",
             font=("Arial Bold", 12)
-        ).place(relx=0.2, rely=0.7, anchor="center")
+        ).place(relx=configuration_labels_x, rely=configuration_labels_y, anchor="center")
         
         self.pos_y_var = tk.StringVar()
         pos_y_entry = tk.Entry(
@@ -176,7 +198,8 @@ class ConfigWindow:
             textvariable=self.pos_y_var,
             width=15
         )
-        pos_y_entry.place(relx=0.7, rely=0.7, anchor="center")
+        pos_y_entry.place(relx=0.6, rely=configuration_labels_y, anchor="center")
+        configuration_labels_y += 0.1
         
         # Save button
         save_button = tk.Button(
@@ -193,20 +216,21 @@ class ConfigWindow:
             from validators import validate_and_show_errors
             
             # Validate inputs
-            meditation_key, pos_x, pos_y = validate_and_show_errors(
+            meditation_key, golpe_key, pos_x, pos_y = validate_and_show_errors(
                 self.meditation_key_var.get(),
+                self.golpe_key_var.get(),
                 self.pos_x_var.get(),
                 self.pos_y_var.get()
             )
             
             # Create and save config
-            config = BotConfig(meditation_key, (pos_x, pos_y))
+            config = BotConfig(meditation_key, golpe_key, (pos_x, pos_y))
             config.save_to_file(CONFIG_FILE)
             
             # Close windows and start bot
             self.window.destroy()
             self.parent.destroy()
-            start_bot(meditation_key, (pos_x, pos_y))
+            start_bot(meditation_key, golpe_key, (pos_x, pos_y))
             
         except ValidationError:
             # Error already shown by validator

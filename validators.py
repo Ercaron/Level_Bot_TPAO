@@ -30,6 +30,24 @@ def validate_meditation_key(key: str) -> bool:
     
     return True
 
+def validate_golpe_key(key: str) -> bool:
+    """
+    Validate golpe key input
+    
+    Args:
+        key: The key to validate
+        
+    Returns:
+        True if valid, raises ValidationError otherwise
+    """
+    #if not key:
+    #    raise ValidationError("Debe ingresar un caracter para la Tecla de golpe")
+    
+    if len(key) != 1:
+        raise ValidationError("La tecla de golpe debe ser un único caracter")
+    
+    return True
+
 
 def validate_position(x: str, y: str) -> Tuple[int, int]:
     """
@@ -65,7 +83,7 @@ def show_validation_error(error_message: str) -> None:
     messagebox.showerror("Error de Validación", error_message)
 
 
-def validate_and_show_errors(meditation_key: str, pos_x: str, pos_y: str) -> Tuple[str, int, int]:
+def validate_and_show_errors(meditation_key: str, golpe_key: str, pos_x: str, pos_y: str) -> Tuple[str, int, int]:
     """
     Validate all inputs and show errors if any
     
@@ -77,8 +95,9 @@ def validate_and_show_errors(meditation_key: str, pos_x: str, pos_y: str) -> Tup
     """
     try:
         validate_meditation_key(meditation_key)
+        validate_golpe_key(golpe_key)
         validated_x, validated_y = validate_position(pos_x, pos_y)
-        return meditation_key, validated_x, validated_y
+        return meditation_key, golpe_key, validated_x, validated_y
     except ValidationError as e:
         show_validation_error(str(e))
         raise
